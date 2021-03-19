@@ -1,0 +1,12 @@
+html {
+  font-family: "Segoe UI", Tahoma, Geneva, Verdana, sans-serif;
+  color: black;
+  text-align: center;
+  background-color: rgba(245, 222, 179, 0.55);
+}
+
+#conteudo {
+  margin-left: 10rem;
+  margin-top: 3rem;
+  background-color: rgba(245, 222, 179, 0.55);
+}

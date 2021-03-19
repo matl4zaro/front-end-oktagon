@@ -1,0 +1,24 @@
+#campaign-list {
+  width: fit-content;
+}
+
+td {
+  text-align: center;
+  vertical-align: middle;
+}
+
+#title {
+  color: black;
+}
+
+.component-header {
+  padding: 5%;
+  display: flex;
+  justify-content: space-around;
+}
+
+FullTable {
+  display: block;
+  margin-left: auto;
+  margin-right: auto;
+}

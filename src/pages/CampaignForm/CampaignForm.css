@@ -1,0 +1,31 @@
+#new-campaign {
+  width: 360px;
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+  text-align: center;
+}
+
+#submit-button {
+  display: flex;
+  justify-content: center;
+  width: 350px;
+}
+
+#form-component {
+  width: 100%;
+  height: auto;
+  margin-top: 100px;
+  margin-left: 100px;
+  padding: 10px;
+  position: relative;
+}
+
+#image-preview {
+  height: 100px;
+}
+
+.error-message {
+  color: red;
+  font-size: 9px;
+}

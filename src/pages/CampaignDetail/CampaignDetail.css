@@ -1,0 +1,27 @@
+#action-list {
+  width: 100%;
+  min-width: 700px;
+}
+
+.table-container {
+  background-color: wheat;
+}
+
+#image-detail img {
+  height: 100px;
+}
+
+#campaign-detail {
+  padding: 2.7% 2.5%;
+}
+
+#campaign-detail h2,
+#campaign-detail p,
+#image-detail {
+  text-align: center;
+}
+
+#campaign-detail h3 {
+  margin-left: -6px;
+  margin-top: 10px;
+}
