@@ -1,3 +1,4 @@
+import Grid from "@material-ui/core/Grid";
 import React, { useEffect, useState } from "react";
 import { Table } from "react-bootstrap";
 import { Link, useLocation } from "react-router-dom";
@@ -5,7 +6,8 @@ var dateFormat = require("dateformat");
 
 import { Campaign } from "../../models/campaign";
 import Services from "../../services/Services";
-import ActionFormModal from "../ActionFormModal/ActionFormModal";
+import EditActionModal from "../ActionFormModal/EditActionModal/EditActionModal";
+import NewActionModal from "../ActionFormModal/NewActionModal/NewActionModal";
 
 import "./CampaignDetail.css";
 
@@ -21,25 +23,31 @@ export default function CampaignDetail() {
       (data) => setImage(data.imgUrl),
       (error) => console.log(error)
     );
-  }, []);
-
-  useEffect(() => {
     Services.getCampaignById(campaignId).then((response: Campaign) => {
       setData(response);
     });
   }, []);
 
-  function BuildActionsTable(props: { renderTable: boolean }) {
+  function CampaignCardInfo(props: { renderTable: boolean }) {
     if (props.renderTable) {
       return (
         <>
           <Table striped bordered hover id="action-list">
             <thead>
               <tr>
-                <td>Title</td>
-                <td>Description</td>
-                <td>Starting at</td>
-                <td>Finishing at</td>
+                <td>
+                  <strong>Title</strong>
+                </td>
+                <td>
+                  <strong>Description</strong>
+                </td>
+                <td>
+                  <strong>Starting at</strong>
+                </td>
+                <td>
+                  <strong>Finishing at</strong>
+                </td>
+                <td></td>
               </tr>
             </thead>
             <tbody>
@@ -48,8 +56,16 @@ export default function CampaignDetail() {
                   <tr key={String(index) + action.title}>
                     <td>{action.title}</td>
                     <td>{action.description}</td>
-                    <td>{dateFormat(action.dateBegin, "dd-MM-yyyy")}</td>
-                    <td>{dateFormat(action.dateEnd, "dd-MM-yyyy")}</td>
+                    <td>{dateFormat(action.dateBegin, "dd-mm-yyyy")}</td>
+                    <td>{dateFormat(action.dateEnd, "dd-mm-yyyy")}</td>
+                    <td>
+                      <EditActionModal
+                        campaignId={campaignId}
+                        actualActionList={campaign.actions}
+                        index={index}
+                        setData={setData}
+                      />
+                    </td>
                   </tr>
                 );
               })}
@@ -69,12 +85,33 @@ export default function CampaignDetail() {
 
   return (
     <div id="campaign-detail">
-      <h2>{campaign.title}</h2>
-      <hr />
-      <div id="image-detail">
-        <img alt="campaign" src={`${mainImage.toString()}`} />
-      </div>
-      <Link
+      <Grid container spacing={3}>
+        <Grid item xs={5}>
+          <Grid container spacing={3}>
+            <Grid item xs={12}>
+              <h2 id="title-detail">{campaign.title}</h2>
+            </Grid>
+            <Grid item xs={12}>
+              <hr />
+              <h3>Description</h3>
+              <p>{campaign.description}</p>
+            </Grid>
+            <Grid item xs={12}>
+              <hr />
+              <h3>Schedule</h3>
+              <p>
+                {dateFormat(campaign.dateBegin, "mmm dS, yyyy") +
+                  " → " +
+                  dateFormat(campaign.dateEnd, "mmm dS, yyyy")}
+              </p>
+            </Grid>
+          </Grid>
+        </Grid>
+        <Grid item xs={7} id="image-detail">
+          <img alt="campaign" src={`${mainImage.toString()}`} />
+        </Grid>
+      </Grid>
+      {/* <Link
         to={{
           pathname: `/campaign/form/${campaign._id}`,
           state: campaign,
@@ -82,21 +119,11 @@ export default function CampaignDetail() {
         style={{ textDecoration: "none" }}
       >
         Edit
-      </Link>
-      <hr />
-      <h3>Description</h3>
-      <p>{campaign.description}</p>
-      <hr />
-      <h3>Schedule</h3>
-      <p>
-        {dateFormat(campaign.dateBegin, "mmm dS, yyyy") +
-          " → " +
-          dateFormat(campaign.dateEnd, "mmm dS, yyyy")}
-      </p>
+      </Link> */}
       <hr />
       <h3>Actions</h3>
-      <BuildActionsTable renderTable={campaign.actions.length > 0} />
-      <ActionFormModal
+      <CampaignCardInfo renderTable={campaign.actions.length > 0} />
+      <NewActionModal
         campaignId={campaignId}
         type={"action"}
         oldActionList={campaign.actions}

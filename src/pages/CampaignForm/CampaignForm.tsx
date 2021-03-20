@@ -7,24 +7,43 @@ import { ICampaign } from "../../models/campaign";
 import Services from "../../services/Services";
 
 import "./CampaignForm.css";
+import { resolve } from "url";
 
 export default function CampaignForm() {
   const { register, handleSubmit, errors } = useForm();
-  const [image, setPreview] = useState({ base64image: "" });
+  const [image, setPreview] = useState({ imagePreview: "" });
+  let base64image: File;
 
   function handleChange(event: ChangeEvent<HTMLInputElement> | null) {
     if (event?.target.files == null) {
       return;
     } else {
       setPreview({
-        base64image: URL.createObjectURL(event.target.files[0]),
+        imagePreview: URL.createObjectURL(event.target.files[0]),
       });
     }
+    base64image = event.target.files[0];
   }
 
-  const onSubmit = (data: any) => {
+  const toBase64 = (fileList: FileList) =>
+    new Promise((resolve, reject) => {
+      const reader = new FileReader();
+      reader.readAsDataURL(fileList[0]);
+      reader.onloadend = () => resolve(reader.result);
+      reader.onerror = (error) => reject(error);
+    });
+
+  interface ISubmitNewCampaign {
+    image: FileList;
+    title: any;
+    description: any;
+    dateBegin: any;
+    dateEnd: any;
+  }
+
+  const onSubmit = async (data: ISubmitNewCampaign) => {
     var campaign: ICampaign = {
-      imgUrl: image.base64image,
+      imgUrl: String(await toBase64(data.image)),
       title: String(data.title),
       description: String(data.description),
       dateBegin: String(data.dateBegin),
@@ -45,7 +64,7 @@ export default function CampaignForm() {
             ref={register}
             accept="image/x-png,image/gif,image/jpeg"
           />
-          <img src={image.base64image} id="image-preview" />
+          <img src={image.imagePreview} id="image-preview" />
         </Form.Group>
         <Form.Group controlId="title">
           <Form.Label>2. What is the title of the campaign?</Form.Label>

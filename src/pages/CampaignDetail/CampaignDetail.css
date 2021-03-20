@@ -3,16 +3,14 @@
   min-width: 700px;
 }
 
-.table-container {
-  background-color: wheat;
-}
-
 #image-detail img {
-  height: 100px;
+  max-width: 90%;
+  max-height: 200px;
 }
 
 #campaign-detail {
   padding: 2.7% 2.5%;
+  width: 60%;
 }
 
 #campaign-detail h2,
@@ -24,4 +22,8 @@
 #campaign-detail h3 {
   margin-left: -6px;
   margin-top: 10px;
+}
+
+#title-detail {
+  font-size: 3rem;
 }

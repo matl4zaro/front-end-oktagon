@@ -6,11 +6,11 @@ import Modal from "@material-ui/core/Modal";
 import MuiAlert, { AlertProps } from "@material-ui/lab/Alert";
 import { makeStyles, Theme, createStyles } from "@material-ui/core/styles";
 
-import { Action } from "../../models/action";
-import { Campaign } from "../../models/campaign";
-import Services from "../../services/Services";
-
-import "./ActionFormModal.css";
+import "./EditActionModal.css";
+import { Action } from "../../../models/action";
+import { Campaign } from "../../../models/campaign";
+import Services from "../../../services/Services";
+import { PencilAlt } from "heroicons-react";
 
 const useStylesModal = makeStyles((theme: Theme) =>
   createStyles({
@@ -27,10 +27,6 @@ const useStylesModal = makeStyles((theme: Theme) =>
   })
 );
 
-function Alert(props: AlertProps) {
-  return <MuiAlert elevation={6} variant="filled" {...props} />;
-}
-
 const useStylesAlert = makeStyles((theme: Theme) => ({
   root: {
     width: "100%",
@@ -40,12 +36,18 @@ const useStylesAlert = makeStyles((theme: Theme) => ({
   },
 }));
 
-export default function ActionFormModal(props: {
+function Alert(props: AlertProps) {
+  return <MuiAlert elevation={5} {...props} />;
+}
+
+interface IEditAction {
   campaignId: string;
-  type: "action" | "campaign";
-  oldActionList: Action[];
+  actualActionList: Action[];
+  index: number;
   setData(refresh: Campaign): void;
-}) {
+}
+
+export default function EditActionModal(props: IEditAction) {
   const modalStyles = useStylesModal();
   const alertStyles = useStylesAlert();
 
@@ -76,18 +78,16 @@ export default function ActionFormModal(props: {
   };
 
   const onSubmit = async (data: any) => {
-    var newActionList: Action[] = props.oldActionList;
-
-    var action: Action = {
+    props.actualActionList[props.index] = {
       title: String(data.title),
       description: String(data.description),
-      dateBegin: new Date(data.dateBegin).toISOString(),
-      dateEnd: new Date(data.dateEnd).toISOString(),
+      dateBegin: props.actualActionList[props.index].dateBegin,
+      dateEnd: props.actualActionList[props.index].dateEnd,
     };
 
-    newActionList.push(action);
+    let editedList = props.actualActionList;
 
-    Services.createActions(newActionList, props.campaignId).then(
+    Services.createActions(editedList, props.campaignId).then(
       () => {
         handleSuccess();
         handleCloseModal();
@@ -110,8 +110,9 @@ export default function ActionFormModal(props: {
           <Form.Control
             type="text"
             placeholder="Action's title"
-            ref={register}
+            ref={register({ required: true })}
             name="title"
+            defaultValue={props.actualActionList[props.index].title}
           />
         </Form.Group>
         <Form.Group controlId="description">
@@ -119,17 +120,10 @@ export default function ActionFormModal(props: {
           <Form.Control
             type="text"
             placeholder="Write the description of the Campaign"
-            ref={register}
+            ref={register({ required: true })}
             name="description"
+            defaultValue={props.actualActionList[props.index].description}
           />
-        </Form.Group>
-        <Form.Group controlId="dateBegin">
-          <Form.Label>Begin Date</Form.Label>
-          <Form.Control type="date" ref={register} name="dateBegin" />
-        </Form.Group>
-        <Form.Group controlId="dateEnd">
-          <Form.Label>End Date</Form.Label>
-          <Form.Control type="date" ref={register} name="dateEnd" />
         </Form.Group>
         <ButtonGroup>
           <Button
@@ -140,24 +134,15 @@ export default function ActionFormModal(props: {
             Cancel
           </Button>
           <Button variant="contained" color="primary" type="submit">
-            Save Action
+            Save Edited Action
           </Button>
         </ButtonGroup>
       </Form>
     </div>
   );
 
-  return (
-    <div>
-      <p onClick={handleOpenModal}>Click here to add an action</p>
-      <Modal
-        open={openModal}
-        onClose={handleCloseModal}
-        aria-labelledby="simple-modal-title"
-        aria-describedby="simple-modal-description"
-      >
-        {actionForm}
-      </Modal>
+  const AlertConfig = () => {
+    return (
       <div className={alertStyles.root}>
         <Snackbar
           open={openAlertSuccess}
@@ -178,6 +163,21 @@ export default function ActionFormModal(props: {
           </Alert>
         </Snackbar>
       </div>
+    );
+  };
+
+  return (
+    <div>
+      <PencilAlt size={12} onClick={handleOpenModal} />
+      <Modal
+        open={openModal}
+        onClose={handleCloseModal}
+        aria-labelledby="simple-modal-title"
+        aria-describedby="simple-modal-description"
+      >
+        {actionForm}
+      </Modal>
+      <AlertConfig />
     </div>
   );
 }
