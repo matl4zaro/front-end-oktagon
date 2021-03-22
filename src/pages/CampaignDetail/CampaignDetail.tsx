@@ -1,4 +1,5 @@
 import Grid from "@material-ui/core/Grid";
+import Skeleton from "@material-ui/lab/Skeleton";
 import React, { useEffect, useState } from "react";
 import { Table } from "react-bootstrap";
 import { Link, useLocation } from "react-router-dom";
@@ -108,7 +109,11 @@ export default function CampaignDetail() {
           </Grid>
         </Grid>
         <Grid item xs={7} id="image-detail">
-          <img alt="campaign" src={`${mainImage.toString()}`} />
+          {mainImage ? (
+            <img alt="campaign" src={`${mainImage.toString()}`} />
+          ) : (
+            <Skeleton variant="rect" width="120px" />
+          )}
         </Grid>
       </Grid>
       {/* <Link

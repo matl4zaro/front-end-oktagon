@@ -29,3 +29,16 @@
   color: red;
   font-size: 9px;
 }
+
+#description,
+#image,
+#title {
+  width: 350px;
+}
+
+#dateEnd,
+#dateBegin {
+  width: 175px;
+  display: flex;
+  align-content: space-around;
+}

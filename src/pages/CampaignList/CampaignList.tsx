@@ -1,23 +1,68 @@
 import React, { useEffect, useState } from "react";
 
-import { Alert, Table } from "react-bootstrap";
+import { Table } from "react-bootstrap";
 import { Link } from "react-router-dom";
-import { Button } from "@material-ui/core";
+import { Button, Snackbar } from "@material-ui/core";
 import { PencilAlt, Trash } from "heroicons-react";
 var dateFormat = require("dateformat");
 import { Skeleton } from "@material-ui/lab";
+import MuiAlert, { AlertProps } from "@material-ui/lab/Alert";
+import { makeStyles, Theme, createStyles } from "@material-ui/core/styles";
+
+// import {
+//   DataGrid,
+//   GridColDef,
+//   ValueGetterParams,
+// } from "@material-ui/data-grid";
 
 import { Campaign } from "../../models/campaign";
 
 import Services from "../../services/Services";
 import "./CampaignList.css";
+import ConfirmDialog from "./ConfirmDialog";
 
-const CampaignList = () => {
+const useStylesAlert = makeStyles((theme: Theme) => ({
+  root: {
+    width: "100%",
+    "& > * + *": {
+      marginTop: theme.spacing(2),
+    },
+  },
+}));
+
+function CustomAlert(props: AlertProps) {
+  return <MuiAlert elevation={5} {...props} />;
+}
+
+export default function CampaignList() {
   const listOfElements: Campaign[] = [];
 
   const [loaded, setLoaded] = useState(false);
+  const [openAlertSuccess, setAlertSuccess] = useState(false);
+  const [openAlertError, setAlertError] = useState(false);
+  const [openAlertCancel, setAlertCancel] = useState(false);
+  // const [deleteControl, confirmDelete] = useState(false);
+  // const [openConfirmDialog, setConfirmDialog] = useState(false);
 
   const [campaigns, fillCampaigns] = useState(listOfElements);
+
+  const alertStyles = useStylesAlert();
+
+  const handleSuccess = () => {
+    setAlertSuccess(true);
+  };
+  const handleError = () => {
+    setAlertError(true);
+  };
+  const handleCancel = () => {
+    setAlertCancel(true);
+  };
+
+  const handleCloseAlert = () => {
+    setAlertError(false);
+    setAlertSuccess(false);
+    setAlertCancel(false);
+  };
 
   useEffect(() => {
     Services.getCampaigns().then((response: Campaign[]) => {
@@ -26,19 +71,65 @@ const CampaignList = () => {
     });
   }, []);
 
+  const AlertConfig = () => {
+    return (
+      <div className={alertStyles.root}>
+        <Snackbar
+          open={openAlertSuccess}
+          autoHideDuration={3000}
+          onClose={handleCloseAlert}
+        >
+          <CustomAlert onClose={handleCloseAlert} severity="success">
+            Campaign removed with success!
+          </CustomAlert>
+        </Snackbar>
+        <Snackbar
+          open={openAlertError}
+          autoHideDuration={3000}
+          onClose={handleCloseAlert}
+        >
+          <CustomAlert onClose={handleCloseAlert} severity="warning">
+            Campaign removal went wrong, please try again!
+          </CustomAlert>
+        </Snackbar>
+        <Snackbar
+          open={openAlertCancel}
+          autoHideDuration={3000}
+          onClose={handleCloseAlert}
+        >
+          <CustomAlert onClose={handleCloseAlert} severity="info">
+            Removal canceled!
+          </CustomAlert>
+        </Snackbar>
+      </div>
+    );
+  };
+
   function handleDelete(id: string) {
+    // function handleDelete(id: string, confirmation: boolean) {
+    // setConfirmDialog(true); FIXME: Correction needed, to use custom confirm dialog
+    // if (confirmation) {
     if (window.confirm("Are you sure to delete this item?")) {
       Services.deleteCampaignById(id).then(
         (response) => {
-          alert("Campaign removed with success!");
+          handleSuccess();
+          Services.getCampaigns().then((response: Campaign[]) => {
+            fillCampaigns(response);
+            setLoaded(true);
+          });
         },
         (error) => {
-          alert("There is some error");
+          handleError();
         }
       );
     } else {
-      alert("Remove canceled!");
+      handleCancel();
     }
+  }
+
+  function deleteDialog(id: string) {
+    // handleDelete(id, deleteControl);
+    handleDelete(id);
   }
 
   function tableContent() {
@@ -71,7 +162,7 @@ const CampaignList = () => {
               to="/campaign"
               style={{ textDecoration: "none", color: "black" }}
             > */}
-            <Trash size={12} onClick={() => handleDelete(campaign._id)} />
+            <Trash size={12} onClick={() => deleteDialog(campaign._id)} />
             {/* </Link> */}
           </td>
         </tr>
@@ -130,10 +221,14 @@ const CampaignList = () => {
           </Button>
         </Link>
       </div>
-
-      {<FullTable />}
+      <FullTable />
+      <AlertConfig />
+      {/* <ConfirmDialog
+        confirmDelete={confirmDelete}
+        setConfirmDialog={setConfirmDialog}
+        openConfirmDialog={openConfirmDialog}
+      /> */}
+      ;
     </div>
   );
-};
-
-export default CampaignList;
+}

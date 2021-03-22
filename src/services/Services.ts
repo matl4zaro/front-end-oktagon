@@ -13,11 +13,9 @@ export default class Services {
     return await this.api
       .get("campaign")
       .then((response: { data: Campaign[] }) => {
-        console.log(response);
         return response.data;
       })
       .catch((error: any) => {
-        console.log(error);
         return error;
       });
   }
@@ -26,11 +24,9 @@ export default class Services {
     return await this.api
       .get(`campaign/${id}`)
       .then((response: { data: Campaign }) => {
-        console.log(response);
         return response.data;
       })
       .catch((error) => {
-        console.log(error);
         return error;
       });
   }
@@ -39,11 +35,9 @@ export default class Services {
     return await this.api
       .post("campaign", campaign)
       .then((response: { data: Campaign }) => {
-        console.log(response);
         return response.data;
       })
       .catch((error) => {
-        console.log(error);
         return error;
       });
   }
@@ -52,11 +46,9 @@ export default class Services {
     return await this.api
       .put(`campaign/${id}`, { actions: actions })
       .then((response: { data: Campaign }) => {
-        console.log(response);
         return response.data;
       })
       .catch((error) => {
-        console.log(error);
         return error;
       });
   }
@@ -65,11 +57,9 @@ export default class Services {
     return await this.api
       .delete(`campaign/${id}`)
       .then((response) => {
-        console.log(response);
         return response.data;
       })
       .catch((error) => {
-        console.log(error);
         return error;
       });
   }

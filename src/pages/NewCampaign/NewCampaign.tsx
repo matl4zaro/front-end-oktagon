@@ -1,18 +1,24 @@
 import React, { ChangeEvent, useState } from "react";
 
 import { useForm } from "react-hook-form";
-import { Button, Form } from "react-bootstrap";
+import { Form, Button } from "react-bootstrap";
 
 import { ICampaign } from "../../models/campaign";
 import Services from "../../services/Services";
 
-import "./CampaignForm.css";
-import { resolve } from "url";
+import "./NewCampaign.css";
 
-export default function CampaignForm() {
+export default function NewCampaign() {
   const { register, handleSubmit, errors } = useForm();
   const [image, setPreview] = useState({ imagePreview: "" });
-  let base64image: File;
+
+  const toBase64 = (fileList: FileList) =>
+    new Promise((resolve, reject) => {
+      const reader = new FileReader();
+      reader.readAsDataURL(fileList[0]);
+      reader.onloadend = () => resolve(reader.result);
+      reader.onerror = (error) => reject(error);
+    });
 
   function handleChange(event: ChangeEvent<HTMLInputElement> | null) {
     if (event?.target.files == null) {
@@ -22,16 +28,7 @@ export default function CampaignForm() {
         imagePreview: URL.createObjectURL(event.target.files[0]),
       });
     }
-    base64image = event.target.files[0];
   }
-
-  const toBase64 = (fileList: FileList) =>
-    new Promise((resolve, reject) => {
-      const reader = new FileReader();
-      reader.readAsDataURL(fileList[0]);
-      reader.onloadend = () => resolve(reader.result);
-      reader.onerror = (error) => reject(error);
-    });
 
   interface ISubmitNewCampaign {
     image: FileList;
@@ -44,16 +41,18 @@ export default function CampaignForm() {
   const onSubmit = async (data: ISubmitNewCampaign) => {
     var campaign: ICampaign = {
       imgUrl: String(await toBase64(data.image)),
-      title: String(data.title),
-      description: String(data.description),
+      title: String(data.title).trim(),
+      description: String(data.description).trim(),
       dateBegin: String(data.dateBegin),
       dateEnd: String(data.dateEnd),
     };
-    Services.createCampaign(campaign);
+    Services.createCampaign(campaign).then(() => history.back());
   };
 
   return (
     <div id="form-component">
+      <h2>Create a new Campaign</h2>
+      <br />
       <Form onSubmit={handleSubmit(onSubmit)} id="new-campaign">
         <Form.Group controlId="image">
           <Form.Label>1. Which Hero is starring in this campaign?</Form.Label>
@@ -73,6 +72,7 @@ export default function CampaignForm() {
             placeholder="Campaign's title"
             ref={register({ required: true })}
             name="title"
+            className="form-field"
           />
           {errors.title && (
             <p className="error-message">
@@ -80,12 +80,11 @@ export default function CampaignForm() {
             </p>
           )}
         </Form.Group>
-
         <Form.Group controlId="description">
-          <Form.Label>Description</Form.Label>
+          <Form.Label>3. Write a brief description of the campaign</Form.Label>
           <Form.Control
             as="textarea"
-            rows={2}
+            rows={3}
             placeholder="Write the description of the Campaign"
             name="description"
             ref={register({ required: true })}
@@ -100,6 +99,7 @@ export default function CampaignForm() {
             type="date"
             name="dateBegin"
             ref={register({ required: true })}
+            className="form-field"
           />
           {errors.title && (
             <p className="error-message">
@@ -113,6 +113,7 @@ export default function CampaignForm() {
             type="date"
             name="dateEnd"
             ref={register({ required: true })}
+            className="form-field"
           />
           {errors.title && (
             <p className="error-message">

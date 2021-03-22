@@ -36,7 +36,7 @@ const useStylesAlert = makeStyles((theme: Theme) => ({
   },
 }));
 
-function Alert(props: AlertProps) {
+function CustomAlert(props: AlertProps) {
   return <MuiAlert elevation={5} {...props} />;
 }
 
@@ -101,45 +101,47 @@ export default function EditActionModal(props: IEditAction) {
     );
   };
 
-  const actionForm = (
-    <div className={modalStyles.paper}>
-      <h3 className="form-title"> ADD AN ACTION </h3>
-      <Form onSubmit={handleSubmit(onSubmit)}>
-        <Form.Group controlId="title">
-          <Form.Label>Title</Form.Label>
-          <Form.Control
-            type="text"
-            placeholder="Action's title"
-            ref={register({ required: true })}
-            name="title"
-            defaultValue={props.actualActionList[props.index].title}
-          />
-        </Form.Group>
-        <Form.Group controlId="description">
-          <Form.Label>Description</Form.Label>
-          <Form.Control
-            type="text"
-            placeholder="Write the description of the Campaign"
-            ref={register({ required: true })}
-            name="description"
-            defaultValue={props.actualActionList[props.index].description}
-          />
-        </Form.Group>
-        <ButtonGroup>
-          <Button
-            variant="contained"
-            color="secondary"
-            onClick={() => handleCloseModal()}
-          >
-            Cancel
-          </Button>
-          <Button variant="contained" color="primary" type="submit">
-            Save Edited Action
-          </Button>
-        </ButtonGroup>
-      </Form>
-    </div>
-  );
+  const ActionForm = () => {
+    return (
+      <div className={modalStyles.paper}>
+        <h3 className="form-title"> ADD AN ACTION </h3>
+        <Form onSubmit={handleSubmit(onSubmit)}>
+          <Form.Group controlId="title">
+            <Form.Label>Title</Form.Label>
+            <Form.Control
+              type="text"
+              placeholder="Action's title"
+              ref={register({ required: true })}
+              name="title"
+              defaultValue={props.actualActionList[props.index].title}
+            />
+          </Form.Group>
+          <Form.Group controlId="description">
+            <Form.Label>Description</Form.Label>
+            <Form.Control
+              type="text"
+              placeholder="Write the description of the Campaign"
+              ref={register({ required: true })}
+              name="description"
+              defaultValue={props.actualActionList[props.index].description}
+            />
+          </Form.Group>
+          <ButtonGroup>
+            <Button
+              variant="contained"
+              color="secondary"
+              onClick={() => handleCloseModal()}
+            >
+              Cancel
+            </Button>
+            <Button variant="contained" color="primary" type="submit">
+              Save Edited Action
+            </Button>
+          </ButtonGroup>
+        </Form>
+      </div>
+    );
+  };
 
   const AlertConfig = () => {
     return (
@@ -149,18 +151,18 @@ export default function EditActionModal(props: IEditAction) {
           autoHideDuration={3000}
           onClose={handleCloseAlert}
         >
-          <Alert onClose={handleCloseAlert} severity="success">
+          <CustomAlert onClose={handleCloseAlert} severity="success">
             Action added successfully!
-          </Alert>
+          </CustomAlert>
         </Snackbar>
         <Snackbar
           open={openAlertError}
           autoHideDuration={3000}
           onClose={handleCloseAlert}
         >
-          <Alert onClose={handleCloseAlert} severity="error">
+          <CustomAlert onClose={handleCloseAlert} severity="error">
             Sorry, some error just happened. Please, try again.
-          </Alert>
+          </CustomAlert>
         </Snackbar>
       </div>
     );
@@ -175,7 +177,7 @@ export default function EditActionModal(props: IEditAction) {
         aria-labelledby="simple-modal-title"
         aria-describedby="simple-modal-description"
       >
-        {actionForm}
+        <ActionForm />
       </Modal>
       <AlertConfig />
     </div>
